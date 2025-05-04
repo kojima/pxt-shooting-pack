@@ -15,6 +15,41 @@ namespace shooting {
         items?: Sprite[]
     }
 
+    /*
+     * スプライトを点滅させる 
+     */
+    //% block="スプライト %sprite を %t ミリ秒間点滅させる||点滅間隔 %interval"
+    //% sprite.shadow=variables_get
+    //% sprite.defl=mySprite
+    //% t.defl=1000
+    //% interval.defl=50
+    //% group="スプライト"
+    //% weight=96
+    export function blinkSprite(sprite: Sprite, t: number, interval?: number) {
+        let invisible = false;
+        const i = setInterval(() => {
+            invisible = !invisible;
+            sprite.setFlag(SpriteFlag.Invisible, invisible);
+        }, interval);
+        setTimeout(() => {
+            clearInterval(i);
+            sprite.setFlag(SpriteFlag.Invisible, false);
+        }, t);
+    }
+
+    /*
+     * 背景をスクロールする 
+     */
+    //% block="背景 %img=background_image_picker を vx %vx vy %vy でスクロールする"
+    //% vx.defl=-50
+    //% vy.defl=0
+    //% group="シーン"
+    //% weight=95
+    export function scrollBackgroundWithSpeed(img: Image, vx: number, vy: number) {
+        scroller.setLayerImage(scroller.BackgroundLayer.Layer0, img);
+        scroller.scrollBackgroundWithSpeed(vx, vy);
+    }
+
     /**
      * HPステータスバーをスプライトに設定する
      */
