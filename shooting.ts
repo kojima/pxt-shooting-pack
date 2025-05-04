@@ -24,7 +24,7 @@ namespace shooting {
     //% t.defl=1000
     //% interval.defl=50
     //% group="スプライト"
-    //% weight=96
+    //% weight=97
     export function blinkSprite(sprite: Sprite, t: number, interval?: number) {
         let invisible = false;
         const i = setInterval(() => {
@@ -35,6 +35,25 @@ namespace shooting {
             clearInterval(i);
             sprite.setFlag(SpriteFlag.Invisible, false);
         }, t);
+    }
+
+    /**
+     * スプライトからprojectileを一定確率で発射する (kind指定)
+     */
+    //% block="スプライトタイプ %spritekind=spritekind から %chance|\\%の確率で %img=screen_image_picker を vx %vx vy %vy で発射する (%kind=spritekind タイプ)"
+    //% group="スプライト"
+    //% inlineInputMode=inline
+    //% vx.defl=-100
+    //% vy.defl=-100
+    //% chance.defl=50
+    //% weight=96
+    export function createProjectileFromSpriteWithChance(spritekind: number, chance: number, img: Image, vx: number, vy: number, kind: number): void {
+        for (let value of sprites.allOfKind(spritekind)) {
+            if (Math.percentChance(chance)) {
+                const projectile = sprites.createProjectileFromSprite(img, value, vx, vy)
+                projectile.setKind(kind)
+            }
+        }
     }
 
     /*
