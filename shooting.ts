@@ -82,7 +82,7 @@ namespace shooting {
     export function createProjectileFromSide(img: Image, vx: number, vy: number, y: number, spritekind: number) {
         const sprite = createProjectile(img, vx, vy, spritekind);
         sprite.y = y;
-        return y;
+        return sprite;
     }
 
     /*
