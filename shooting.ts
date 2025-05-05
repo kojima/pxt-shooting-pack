@@ -15,6 +15,76 @@ namespace shooting {
         items?: Sprite[]
     }
 
+    /**
+     * Create a new sprite with given speed, and place it at the edge of the screen so it moves towards the middle.
+     * The sprite auto-destroys when it leaves the screen. You can modify position after it's created.
+     */
+    //% group="Projectiles"
+    //% blockId=spritescreateprojectile block="projectile %img=screen_image_picker vx %vx vy %vy of kind %kind=spritekind||from sprite %sprite=variables_get(mySprite)"
+    //% weight=99 help=sprites/create-projectile
+    //% blockSetVariable=projectile
+    //% inlineInputMode=inline
+    //% expandableArgumentMode=toggle
+    //% deprecated=true blockHidden=true
+    export function createProjectile(img: Image, vx: number, vy: number, kind?: number, sprite?: Sprite) {
+        const s = sprites.create(img, kind || SpriteKind.Projectile);
+        const sc = game.currentScene();
+
+        s.vx = vx;
+        s.vy = vy;
+
+        if (sprite) {
+            s.setPosition(sprite.x, sprite.y);
+        } else {
+            // put it at the edge of the screen so that it moves towards the middle
+            // If the scene has a tile map, place the sprite fully on the screen
+            const xOff = sc.tileMap ? -(s.width >> 1) : (s.width >> 1) - 1;
+            const yOff = sc.tileMap ? -(s.height >> 1) : (s.height >> 1) - 1;
+            const cam = game.currentScene().camera;
+
+            let initialX = cam.offsetX;
+            let initialY = cam.offsetY;
+
+            if (vx < 0) {
+                initialX += screen.width + xOff;
+            } else if (vx > 0) {
+                initialX += -xOff;
+            }
+
+            if (vy < 0) {
+                initialY += screen.height + yOff;
+            } else if (vy > 0) {
+                initialY += -yOff;
+            }
+
+            s.setPosition(initialX, initialY);
+        }
+
+        s.flags |= sprites.Flag.AutoDestroy | sprites.Flag.DestroyOnWall;
+
+        return s;
+    }
+
+    /**
+     * Create a new sprite with a given speed, and place it at the edge of the screen so it moves towards the middle.
+     * The sprite auto-destroys when it leaves the screen. You can modify position after it's created.
+     */
+    // projectile %img=screen_image_picker from side with vx %vx vy %vy y %y (type %spritekind=spritekind)
+    //% group="Projectiles"
+    //% blockId=spritescreateprojectilefromsidewithtype block="発射体 %img=screen_image_picker を横から速度 vx %vx vy %vy 位置 y %y (タイプ %spritekind=spritekind)で発射する"
+    //% vx.shadow=spriteSpeedPicker
+    //% vy.shadow=spriteSpeedPicker
+    //% y.defl=0
+    //% stripekind.defl=Enemy
+    //% weight=99 help=sprites/create-projectile-from-side
+    //% blockSetVariable=projectile
+    //% inlineInputMode=inline
+    export function createProjectileFromSide(img: Image, vx: number, vy: number, y: number, spritekind: number) {
+        const sprite = createProjectile(img, vx, vy, spritekind);
+        sprite.y = y;
+        return y;
+    }
+
     /*
      * スプライトを点滅させる 
      */
@@ -43,8 +113,8 @@ namespace shooting {
     //% block="スプライトタイプ %spritekind=spritekind から %chance|\\%の確率で %img=screen_image_picker を vx %vx vy %vy で発射する (%kind=spritekind タイプ)"
     //% group="スプライト"
     //% inlineInputMode=inline
-    //% vx.defl=-100
-    //% vy.defl=-100
+    //% vx.defl=-150
+    //% vy.defl=0
     //% chance.defl=50
     //% weight=96
     export function createProjectileFromSpriteWithChance(spritekind: number, chance: number, img: Image, vx: number, vy: number, kind: number): void {
